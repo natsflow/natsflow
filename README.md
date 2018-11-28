@@ -1,2 +1,5 @@
 # natsflow
-Build event &amp; rpc flows to interact with your entire ecosystem
+
+Build event &amp; rpc based flows to interact with your entire cloud ecosystem
+
+See (examples)[examples] for sample flows.
