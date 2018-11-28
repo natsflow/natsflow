@@ -1,4 +1,5 @@
-A flow with similar functionality to [bitnami-labs/kubewatch](https://github.com/bitnami-labs/kubewatch)
+A flow with similar functionality to [bitnami-labs/kubewatch](https://github.com/bitnami-labs/kubewatch).
+
 Listens to events in all kube clusters and outputs them to slack.
 
 <img src="https://github.com/natsflow/natsflow/blob/master/examples/slack-kubewatch/output.png" width="300">
