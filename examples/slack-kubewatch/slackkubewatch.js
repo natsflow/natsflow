@@ -8,6 +8,7 @@ nats.subscribe('kube.event.watch', resp => {
   }
   let slackMsg = {
     channel: 'CDNPXK2KT',
+    as_user: true,
     attachments: [
       {
         fallback: `Namespace: ${resp.Object.involvedObject.namespace} Name: ${resp.Object.involvedObject.name} Kind: ${resp.Object.involvedObject.kind} Reason: ${resp.Object.reason} Message: ${resp.Object.message} Source: ${resp.Object.source.component}`,
