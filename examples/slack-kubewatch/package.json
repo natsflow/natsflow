@@ -1,11 +1,10 @@
 {
-  "name": "node-nats-deploy-flow",
+  "name": "slack-kubewatch",
   "version": "1.0.0",
-  "description": "",
-  "main": "flow.js",
+  "description": "A flow with similar functionality to [bitnami-labs/kubewatch](https://github.com/bitnami-labs/kubewatch).",
+  "main": "slackkubewatch.js",
   "dependencies": {
-    "nats": "^0.8.10",
-    "protobufjs": "^6.8.6"
+    "nats": "^1.2.2"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slack-kubewatch
+  labels:
+    app: slack-kubewatch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slack-kubewatch
+  template:
+    metadata:
+      labels:
+        app: slack-kubewatch
+    spec:
+      containers:
+        - name: slack-kubewatch
+          image: natsflow/slack-kubewatch
+          env:
+          - name: "NATS_URL"
+            value: "nats://nats-cluster:4222"
