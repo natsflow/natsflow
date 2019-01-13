@@ -7,6 +7,13 @@ Listens to events in all kube clusters and outputs them to slack.
 1. Run [slack-nats](https://github.com/natsflow/slack-nats) & [kube-nats](https://github.com/natsflow/kube-nats)
 1. Run slackkubewatch.js flow.
 
+Inside kubernetes (expects nats at "nats-cluster" - see deployment.yaml):
+
+```
+skaffold dev
+```
+
+...or external to cluster:
 ```
 kubectl port-forward nats-cluster-1 4222:4222
 npm install
