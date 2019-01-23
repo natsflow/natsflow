@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-nats
+  labels:
+    app: echo-nats
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: echo-nats
+  template:
+    metadata:
+      labels:
+        app: echo-nats
+    spec:
+      containers:
+      - name: echo-nats
+        image: natsflow/echo-nats
+        env:
+        - name: "NATS_URL"
+          value: "nats://nats-cluster:4222"
