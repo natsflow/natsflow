@@ -1,18 +1,12 @@
 package main
 
 import (
-	"github.com/nats-io/go-nats"
-	"regexp"
-	"github.com/rs/zerolog/log"
-	"strings"
 	"fmt"
+	"github.com/nats-io/go-nats"
+	"github.com/rs/zerolog/log"
+	"regexp"
+	"strings"
 	"time"
-)
-
-const (
-	sub = "slack.event.message"
-	pub = "slack.chat.postMessage"
-	group = "nats-echo-queue"
 )
 
 type NatsClient interface {
@@ -21,53 +15,40 @@ type NatsClient interface {
 }
 
 func HandleRequest(n NatsClient) {
-	n.QueueSubscribe(sub, group, echoHandler(n))
+	n.QueueSubscribe("slack.event.message", "nats-echo-queue", echoHandler(n))
 }
 
-func echoHandler(n NatsClient) func (m *slackMsg) {
+func echoHandler(n NatsClient) func(m *slackMsg) {
 	return func(m *slackMsg) {
-		if m.validateCommand() {
+		if ok, _ := regexp.MatchString("^nats echo\\s+.*$", m.Text); !ok {
+			return
+		}
+		msg := slackMsg{
+			Channel:  m.Channel,
+			Text:     fmt.Sprintf("You said:\n> %s", strings.TrimPrefix(m.Text, "nats echo")),
+			ThreadTs: m.Ts,
+		}
 
-			msg := slackMsg{
-				Channel:m.Channel,
-				Text: fmt.Sprintf("You said:\n> %s", splitText(m.Text)),
-				ThreadTs:m.Ts,
-			}
-			resp := struct {
-				Ok bool `json:"ok"`
-				Error string `json:"error"`
-			}{}
-			if err := n.Request(pub, &msg, &resp, 10 * time.Second); err != nil {
-				log.Error().
-					Err(err).
-					Str("respErr", resp.Error).
-					Str("subject", pub).
-					Str("message", m.Text).
-					Msg("error publishing message to NATS")
-			}
+		var resp slackPostResp
+		if err := n.Request("slack.chat.postMessage", &msg, &resp, 10*time.Second); err != nil || resp.Error != "" {
+			log.Error().
+				Err(err).
+				Str("resp", fmt.Sprintf("%+v", resp)).
+				Str("subject", "slack.chat.postMessage").
+				Str("message", m.Text).
+				Msg("error publishing message to NATS")
 		}
 	}
 }
 
-
 type slackMsg struct {
-	User	string	`json:"user,omitempty"`
-	Channel string `json:"channel"`
-	Ts		string `json:"ts"`
-	ThreadTs string	`json:"thread_ts,omitempty"`
-	AsUser	bool	`json:"as_user"`
-	Text	string	`json:"text"`
-	Type	string	`json:"type"`
+	Channel  string `json:"channel"`
+	Ts       string `json:"ts"`
+	ThreadTs string `json:"thread_ts,omitempty"`
+	Text     string `json:"text"`
 }
 
-func (m *slackMsg) validateCommand() bool {
-	const rgx = "^nats\\s+echo\\s+.*$"
-	ok, _ := regexp.MatchString(rgx, m.Text)
-	return ok
-}
-
-func splitText(s string) string {
-	re := regexp.MustCompile("\\s+")
-	sp := re.Split(s, -1)
-	return strings.Join(sp[2:], " ")
+type slackPostResp struct {
+	Ok    bool   `json:"ok"`
+	Error string `json:"error"`
 }

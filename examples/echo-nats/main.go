@@ -1,9 +1,9 @@
 package main
 
 import (
-	"os"
 	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
+	"os"
 )
 
 func main() {
@@ -29,8 +29,7 @@ func newNatsConn(host string) *nats.EncodedConn {
 
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	if err != nil {
-	log.Fatal().Err(err).Msg("could not create encoded NATS connection")
+		log.Fatal().Err(err).Msg("could not create encoded NATS connection")
 	}
 	return c
 }
-

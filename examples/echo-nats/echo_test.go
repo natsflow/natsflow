@@ -1,15 +1,15 @@
 package main
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"github.com/nats-io/go-nats"
+	"github.com/stretchr/testify/assert"
+	"testing"
 	"time"
 )
 
 type NatsStub struct {
-	Sub string
-	Resp interface{}
+	Sub   string
+	Resp  interface{}
 	Reply interface{}
 }
 
@@ -22,7 +22,6 @@ func (n *NatsStub) Request(subject string, v interface{}, vPtr interface{}, time
 func (n *NatsStub) QueueSubscribe(subject, queue string, cb nats.Handler) (*nats.Subscription, error) {
 	return nil, nil
 }
-
 
 func TestHandleRequestSuccess(t *testing.T) {
 	// given
@@ -39,40 +38,4 @@ func TestHandleRequestSuccess(t *testing.T) {
 	// then
 	assert.Equal(t, e, a)
 	assert.Equal(t, eSub, aSub)
-}
-
-func TestMsgValidateCommandSuccess(t *testing.T) {
-	// given
-	m := slackMsg{
-		Text: "nats echo blahblahblah",
-	}
-	exp := true
-	// when
-	act := m.validateCommand()
-	// then
-	assert.Equal(t, exp, act)
-}
-
-func TestMsgValidateCommandFails(t *testing.T) {
-	// given
-	m := slackMsg{
-		Text: "blahblah",
-	}
-	exp := false
-	// when
-	act := m.validateCommand()
-	// then
-	assert.Equal(t, exp, act)
-}
-
-func TestMsgValidateCommandWhitespaceSuccess(t *testing.T) {
-	// given
-	m := slackMsg{
-		Text: "nats   echo     blahblah",
-	}
-	exp := true
-	// when
-	act := m.validateCommand()
-	// then
-	assert.Equal(t, exp, act)
 }
