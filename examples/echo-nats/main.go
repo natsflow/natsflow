@@ -33,3 +33,4 @@ func newNatsConn(host string) *nats.EncodedConn {
 	}
 	return c
 }
+

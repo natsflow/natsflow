@@ -25,7 +25,7 @@ func echoHandler(n NatsClient) func(m *slackMsg) {
 		}
 		msg := slackMsg{
 			Channel:  m.Channel,
-			Text:     fmt.Sprintf("You said:\n> %s", strings.TrimPrefix(m.Text, "nats echo")),
+			Text:     fmt.Sprintf("You said:\n> %s", strings.TrimPrefix(m.Text, "nats echo ")),
 			ThreadTs: m.Ts,
 		}
 
