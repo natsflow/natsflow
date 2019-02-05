@@ -12,8 +12,6 @@ import (
 )
 
 
-//TODO FIX DIS AND NEW VERSION (UPLAOD ON STASH ALONG WITH FLYTE ROOM)
-// DO BETTER TESTS FOR FLYTE ROOM N HCOM VERSION OF ECHO
 func main() {
 	natsURL, ok := os.LookupEnv("NATS_URL")
 	if !ok {
