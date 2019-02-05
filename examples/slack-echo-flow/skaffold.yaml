@@ -2,7 +2,7 @@ apiVersion: skaffold/v1beta2
 kind: Config
 build:
   artifacts:
-  - image: natsflow/echo-nats
+  - image: natsflow/slack-echo-flow
 deploy:
   kubectl:
     manifests:

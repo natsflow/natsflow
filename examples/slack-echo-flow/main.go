@@ -1,25 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
-	"regexp"
-	"strings"
+	"os"
+	"runtime"
 	"time"
+	"regexp"
+	"fmt"
+	"strings"
 )
 
-type NatsClient interface {
-	QueueSubscribe(subject, queue string, cb nats.Handler) (*nats.Subscription, error)
-	Request(subject string, v interface{}, vPtr interface{}, timeout time.Duration) error
-}
 
-func HandleRequest(n NatsClient) {
-	n.QueueSubscribe("slack.event.message", "nats-echo-queue", echoHandler(n))
-}
+//TODO FIX DIS AND NEW VERSION (UPLAOD ON STASH ALONG WITH FLYTE ROOM)
+// DO BETTER TESTS FOR FLYTE ROOM N HCOM VERSION OF ECHO
+func main() {
+	natsURL, ok := os.LookupEnv("NATS_URL")
+	if !ok {
+		natsURL = nats.DefaultURL
+	}
 
-func echoHandler(n NatsClient) func(m *slackMsg) {
-	return func(m *slackMsg) {
+	n := newNatsConn(natsURL)
+	n.QueueSubscribe("slack.event.message", "nats-echo-queue", func(m *slackMsg) {
 		if ok, _ := regexp.MatchString("^nats echo\\s+.*$", m.Text); !ok {
 			return
 		}
@@ -38,7 +40,24 @@ func echoHandler(n NatsClient) func(m *slackMsg) {
 				Str("message", m.Text).
 				Msg("error publishing message to NATS")
 		}
+	})
+
+	runtime.Goexit()
+}
+
+func newNatsConn(host string) *nats.EncodedConn {
+	nc, err := nats.Connect(host)
+	if err != nil {
+		log.Fatal().Err(err).Str("host", host).Msg("could not connect to NATS")
 	}
+
+	log.Info().Str("host", host).Msg("connected to NATS")
+
+	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
+	if err != nil {
+		log.Fatal().Err(err).Msg("could not create encoded NATS connection")
+	}
+	return c
 }
 
 type slackMsg struct {
