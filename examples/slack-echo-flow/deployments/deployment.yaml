@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slack-echo-flow
+  labels:
+    app: slack-echo-flow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: slack-echo-flow
+  template:
+    metadata:
+      labels:
+        app: slack-echo-flow
+    spec:
+      containers:
+      - name: slack-echo-flow
+        image: natsflow/slack-echo-flow
+        env:
+        - name: "NATS_URL"
+          value: "nats://nats-cluster:4222"
